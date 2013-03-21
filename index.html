@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <title>Demo Dijit</title>
+
+
+    <link rel="stylesheet" type="text/css" href="http://servicesbeta.esri.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
+
+
+    <script type="text/javascript"">
+        // get current path
+        var pathRegex = new RegExp(/\/[^\/]+$/);
+        var locationPath = location.pathname.replace(pathRegex, '');
+        // Dojo Config
+        var dojoConfig = {
+            parseOnLoad: true,
+            packages: [
+                {
+                    name: "modules",
+                    location: locationPath + '/js/'
+                }
+            ]
+        };
+    </script>
+
+
+    <script src="http://servicesbeta.esri.com/jsapi/arcgis/3.4" type="text/javascript"></script>
+    <script type="text/javascript">
+        require(["modules/myDijit"], function(myDijit){
+
+            new myDijit({}, "myDijit");
+
+            var myMap = new esri.Map("map", {
+                center: [-56.049, 38.485],
+                zoom: 3,
+                basemap: "streets"
+            });
+
+
+        });
+    </script>
+
+
+
+</head>
+<body>
+    <div id="myDijit"></div>
+    <div id="map" class="map"></div>
+</body>
+</html>
