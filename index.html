@@ -4,12 +4,53 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <title>Demo Dijit</title>
-
+    
 
     <link rel="stylesheet" type="text/css" href="http://servicesbeta.esri.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
 
-
-    <script type="text/javascript"">
+    
+    
+    <style>
+        body{
+            margin:40px;
+            padding:20px;
+        }
+        .container{
+            position:relative;
+            padding: 10px;
+            border: 1px solid #eee;
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+        }
+        #map{
+            width:100%;
+            height: 500px;
+        }
+        #fullscreen_button{
+            position:absolute;
+            z-index: 4;
+            top:20px;
+            right:20px;
+        }
+        #fullscreen_button .button{
+            width: 30px;
+            height: 30px;
+            border: 2px solid #666666;
+            -webkit-user-select: none;
+            -webkit-border-radius: 5px;
+            border-radius: 5px;
+            cursor:pointer;
+        }
+        #fullscreen_button .enter{
+            background: #fff url(images/fullscreen.png) no-repeat center center;
+        }
+        #fullscreen_button .exit{
+            background: #fff url(images/fullscreen_exit.png) no-repeat center center;
+        }
+    </style>
+    
+    
+    <script type="text/javascript">
         // get current path
         var pathRegex = new RegExp(/\/[^\/]+$/);
         var locationPath = location.pathname.replace(pathRegex, '');
@@ -25,20 +66,27 @@
         };
     </script>
 
+    
+    
+    
+    
 
     <script src="http://servicesbeta.esri.com/jsapi/arcgis/3.4" type="text/javascript"></script>
     <script type="text/javascript">
-        require(["modules/myDijit"], function(myDijit){
-
-            new myDijit({}, "myDijit");
+        require(["modules/FullScreenMap"], function(FullScreenMap){
 
             var myMap = new esri.Map("map", {
                 center: [-56.049, 38.485],
                 zoom: 3,
                 basemap: "streets"
             });
+        
+        
+            var fullscreen = new FullScreenMap({
+                //map: myMap
+            }, "fullscreen");
 
-
+            
         });
     </script>
 
@@ -46,7 +94,16 @@
 
 </head>
 <body>
-    <div id="myDijit"></div>
-    <div id="map" class="map"></div>
+    <h1>Fullscreen example</h1>
+    
+    
+    
+    <div class="container">
+        <div id="fullscreen"></div>
+        <div id="map" class="map"></div>
+    </div>
+
+
+    
 </body>
 </html>
