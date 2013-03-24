@@ -10,7 +10,7 @@ define([
     "dojo/dom",
 
 
-
+    // load template
     "dojo/text!./templates/FullScreenMap.html",
 
 
@@ -18,17 +18,18 @@ define([
     "dojo/dom-class",
     "dojo/dom-attr",
 
-
+    "esri/map",
 
     "dojo/domReady!"
 ],
-function(
+function (
     declare, connect,
     _WidgetBase, _OnDijitClickMixin, _TemplatedMixin,
     on, dom,
     dijitTemplate,
-    domStyle, domClass, domAttr
-){
+    domStyle, domClass, domAttr,
+    Map
+) {
     return declare([_WidgetBase, _OnDijitClickMixin, _TemplatedMixin], {
 
         declaredClass: "modules.FullScreenMap",
@@ -66,17 +67,17 @@ function(
         // start widget. called by user
         startup: function () {
             var _self = this;
-            
+
             // map not defined
-            if(!_self.map){
+            if (!_self.map) {
                 console.log('map required');
                 _self.destroy();
                 return;
             }
-            
+
             // map domNode
             this._mapNode = dom.byId(this.map.id);
-            
+
             // when map is loaded
             if (this.map.loaded) {
                 _self._init();
@@ -115,8 +116,20 @@ function(
             var _self = this;
             var center = this.map.extent.getCenter();
 
+            
+            // determine fullscreen state
+            var state;
+            if (this._mapNode.requestFullscreen) {
+                state = document.fullScreen;
+            } else if (this._mapNode.mozRequestFullScreen) {
+                state = document.mozFullScreen;
+            } else if (this._mapNode.webkitRequestFullScreen) {
+                state = document.webkitIsFullScreen;
+            }
 
-            this.set("fullscreen", document.webkitIsFullScreen);
+            
+            // set fullscreen status
+            this.set("fullscreen", state);
 
 
             if (this.get("fullscreen")) {
@@ -139,7 +152,6 @@ function(
             });
 
 
-
             this.map.resize();
 
 
@@ -157,18 +169,34 @@ function(
         _init: function () {
             var _self = this;
 
+            
+            
             // enter/exit fullscreen event
-            on(_self._mapNode, "webkitfullscreenchange", function () {
-                _self.refresh();
-            });
+            if (this._mapNode.requestFullscreen) {
+                on(document, "fullscreenchange", function () {
+                    _self.refresh();
+                });
+            } else if (this._mapNode.mozRequestFullScreen) {
+                on(document, "mozfullscreenchange", function () {
+                    _self.refresh();
+                });
+            } else if (this._mapNode.webkitRequestFullScreen) {
+                on(document, "webkitfullscreenchange", function () {
+                    _self.refresh();
+                });
+            }
 
+            
+            
             this.set("loaded", true);
             this.onLoad();
+            
+            
+            
         },
 
-
-
-
+        
+        
         _toggleFullscreen: function () {
             if (this.get("fullscreen")) {
                 if (document.exitFullscreen) {
