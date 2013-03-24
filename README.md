@@ -3,6 +3,8 @@
 ## Features
 An example Dijit boilerplate for the ArcGIS API for JavaScript
 
+[View Demo](http://driskull.github.com/arcgis-dijit-sample-js/)
+
 ## Instructions
 See the powerpoint in the root directory for more information. This demo theater was presented at the 2013 Developer Summit in Palm Springs CA.
 
