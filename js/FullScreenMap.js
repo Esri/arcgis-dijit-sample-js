@@ -35,7 +35,9 @@ function (
 
         templateString: dijitTemplate,
 
-        options: {},
+        options: {
+            map: null
+        },
 
         fullscreen: false,
 
