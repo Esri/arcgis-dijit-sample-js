@@ -5,6 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <title>Fullscreen Dijit</title>
     <link rel="stylesheet" type="text/css" href="http://servicesbeta.esri.com/jsapi/arcgis/3.4/js/esri/css/esri.css">
+
+
+
+
     <style>
         body{
             margin:40px;
@@ -43,11 +47,11 @@
             background: #fff url(images/fullscreen_exit.png) no-repeat center center;
         }
     </style>
-    
-    
-    
-    
-    
+
+
+
+
+
     <script type="text/javascript">
         // get current path
         var pathRegex = new RegExp(/\/[^\/]+$/);
@@ -64,10 +68,10 @@
         };
     </script>
 
-    
-    
-    
-    
+
+
+
+
 
     <script src="http://servicesbeta.esri.com/jsapi/arcgis/3.4" type="text/javascript"></script>
     <script type="text/javascript">
@@ -78,31 +82,31 @@
                 zoom: 3,
                 basemap: "streets"
             });
-        
-        
+
+
             var fullscreen = new FullScreenMap({
                 map: myMap
             }, "fullscreen");
             fullscreen.startup();
-            
-            
+
+
             fullscreen.watch("fullscreen", function(){
                 console.log("fullscreen: " + fullscreen.get("fullscreen"));
             });
 
-            
+
         });
     </script>
-    
-    
+
+
 
 
 
 </head>
 <body>
 
-    
-    
+
+
     <div class="container">
         <div id="map" class="map">
             <div id="fullscreen"></div>
@@ -110,6 +114,6 @@
     </div>
 
 
-    
+
 </body>
 </html>

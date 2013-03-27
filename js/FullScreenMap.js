@@ -7,13 +7,12 @@ define([
     "dijit/_OnDijitClickMixin",
     "dijit/_TemplatedMixin",
     "dojo/on",
-    "dojo/dom",
 
 
     // load template
     "dojo/text!./templates/FullScreenMap.html",
 
-
+    "dojo/dom",
     "dojo/dom-style",
     "dojo/dom-class",
     "dojo/dom-attr",
@@ -25,9 +24,9 @@ define([
 function (
     declare, connect,
     _WidgetBase, _OnDijitClickMixin, _TemplatedMixin,
-    on, dom,
+    on,
     dijitTemplate,
-    domStyle, domClass, domAttr,
+    dom, domStyle, domClass, domAttr,
     Map
 ) {
     return declare([_WidgetBase, _OnDijitClickMixin, _TemplatedMixin], {
@@ -116,7 +115,7 @@ function (
             var _self = this;
             var center = this.map.extent.getCenter();
 
-            
+
             // determine fullscreen state
             var state;
             if (this._mapNode.requestFullscreen) {
@@ -127,7 +126,7 @@ function (
                 state = document.webkitIsFullScreen;
             }
 
-            
+
             // set fullscreen status
             this.set("fullscreen", state);
 
@@ -169,8 +168,8 @@ function (
         _init: function () {
             var _self = this;
 
-            
-            
+
+
             // enter/exit fullscreen event
             if (this._mapNode.requestFullscreen) {
                 on(document, "fullscreenchange", function () {
@@ -186,17 +185,17 @@ function (
                 });
             }
 
-            
-            
+
+
             this.set("loaded", true);
             this.onLoad();
-            
-            
-            
+
+
+
         },
 
-        
-        
+
+
         _toggleFullscreen: function () {
             if (this.get("fullscreen")) {
                 if (document.exitFullscreen) {
