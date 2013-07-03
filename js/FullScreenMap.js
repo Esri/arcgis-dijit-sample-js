@@ -2,7 +2,6 @@
 
 define([
     "dojo/_base/declare",
-    "dojo/_base/connect",
     "dijit/_WidgetBase",
     "dijit/_OnDijitClickMixin",
     "dijit/_TemplatedMixin",
@@ -22,7 +21,7 @@ define([
     "dojo/domReady!"
 ],
 function (
-    declare, connect,
+    declare,
     _WidgetBase, _OnDijitClickMixin, _TemplatedMixin,
     on,
     dijitTemplate,
@@ -83,7 +82,7 @@ function (
             if (this.map.loaded) {
                 _self._init();
             } else {
-                connect.connect(_self.map, "onLoad", function () {
+                on.once(_self.map, "load", function () {
                     _self._init();
                 });
             }
