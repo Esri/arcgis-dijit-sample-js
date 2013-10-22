@@ -1,9 +1,11 @@
-// http://dojotoolkit.org/reference-guide/1.8/quickstart/writingWidgets.html
+// http://dojotoolkit.org/reference-guide/1.9/quickstart/writingWidgets.html
 
 define([
+    "dojo/Evented",
     "dojo/_base/declare",
+    "dojo/_base/lang",
     "dijit/_WidgetBase",
-    "dijit/_OnDijitClickMixin",
+    "dijit/a11yclick",
     "dijit/_TemplatedMixin",
     "dojo/on",
 
@@ -21,14 +23,15 @@ define([
     "dojo/domReady!"
 ],
 function (
-    declare,
-    _WidgetBase, _OnDijitClickMixin, _TemplatedMixin,
+    Evented,
+    declare, lang,
+    _WidgetBase, a11yclick, _TemplatedMixin,
     on,
     dijitTemplate,
     dom, domStyle, domClass, domAttr,
     Map
 ) {
-    return declare([_WidgetBase, _OnDijitClickMixin, _TemplatedMixin], {
+    return declare([_WidgetBase, _TemplatedMixin, Evented], {
 
         declaredClass: "modules.FullScreenMap",
 
@@ -38,22 +41,17 @@ function (
             map: null
         },
 
-        fullscreen: false,
-
-        loaded: false,
-
-
         // lifecycle: 1
         constructor: function (options, srcRefNode) {
 
             // mix in settings and defaults
-            declare.safeMixin(this.options, options);
+            var defaults = lang.mixin({}, this.options, options);
 
             // widget node
             this.domNode = srcRefNode;
 
-            // local map
-            this.map = this.options.map;
+            // set map property
+            this.set("map", defaults.map);
 
         },
 
@@ -61,17 +59,16 @@ function (
         // buildRendering: function() {},
 
         // called after buildRendering() is finished
-        // postCreate: function() {},
-
+        postCreate: function() {
+            this.own(on(this.buttonNode, a11yclick, lang.hitch(this, this._toggleFullscreen)));
+        },
 
         // start widget. called by user
         startup: function () {
-            var _self = this;
-
             // map not defined
-            if (!_self.map) {
+            if (!this.get("map")) {
                 console.log('map required');
-                _self.destroy();
+                this.destroy();
                 return;
             }
 
@@ -80,11 +77,11 @@ function (
 
             // when map is loaded
             if (this.map.loaded) {
-                _self._init();
+                this._init();
             } else {
-                on.once(_self.map, "load", function () {
-                    _self._init();
-                });
+                on.once(this.map, "load", lang.hitch(this, function () {
+                    this._init();
+                }));
             }
         },
 
@@ -93,13 +90,6 @@ function (
         destroy: function () {
             this.inherited(arguments);
         },
-
-
-
-        /* ---------------- */
-        /* Public Events */
-        /* ---------------- */
-        onLoad: function () {},
 
 
 
@@ -113,7 +103,6 @@ function (
 
         refresh: function () {
             var w, h;
-            var _self = this;
             var center = this.map.extent.getCenter();
 
 
@@ -156,9 +145,9 @@ function (
 
 
             // re-center map
-            setTimeout(function () {
-                _self.map.centerAt(center);
-            }, 500);
+            setTimeout(lang.hitch(this, function () {
+                this.map.centerAt(center);
+            }), 500);
 
         },
 
@@ -167,30 +156,29 @@ function (
         /* Private Functions */
         /* ---------------- */
         _init: function () {
-            var _self = this;
-
 
 
             // enter/exit fullscreen event
             if (this._mapNode.requestFullscreen) {
-                on(document, "fullscreenchange", function () {
-                    _self.refresh();
-                });
+                on(document, "fullscreenchange", lang.hitch(this, function () {
+                    this.refresh();
+                }));
             } else if (this._mapNode.mozRequestFullScreen) {
-                on(document, "mozfullscreenchange", function () {
-                    _self.refresh();
-                });
+                on(document, "mozfullscreenchange", lang.hitch(this, function () {
+                    this.refresh();
+                }));
             } else if (this._mapNode.webkitRequestFullScreen) {
-                on(document, "webkitfullscreenchange", function () {
-                    _self.refresh();
-                });
+                on(document, "webkitfullscreenchange", lang.hitch(this, function () {
+                    this.refresh();
+                }));
             }
 
 
 
             this.set("loaded", true);
-            this.onLoad();
-
+            
+            // emit event
+            this.emit("load", {});
 
 
         },
