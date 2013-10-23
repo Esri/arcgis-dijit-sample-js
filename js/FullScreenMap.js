@@ -38,7 +38,8 @@ function (
         templateString: dijitTemplate,
 
         options: {
-            map: null
+            map: null,
+            visible: true
         },
 
         // lifecycle: 1
@@ -52,6 +53,10 @@ function (
 
             // set map property
             this.set("map", defaults.map);
+            this.set("visible", defaults.visible);
+            
+            // watch for changes
+            this.watch("visible", this._visible);
 
         },
 
@@ -65,6 +70,9 @@ function (
 
         // start widget. called by user
         startup: function () {
+        
+            this._visible();
+        
             // map not defined
             if (!this.get("map")) {
                 console.log('map required');
@@ -73,7 +81,7 @@ function (
             }
 
             // map domNode
-            this._mapNode = dom.byId(this.map.id);
+            this._mapNode = this.map.container;
 
             // when map is loaded
             if (this.map.loaded) {
@@ -91,6 +99,13 @@ function (
             this.inherited(arguments);
         },
 
+
+        show: function(){
+            this.set("visible", true);  
+        },
+        hide: function(){
+            this.set("visible", false);
+        },
 
 
         /* ---------------- */
@@ -157,7 +172,6 @@ function (
         /* ---------------- */
         _init: function () {
 
-
             // enter/exit fullscreen event
             if (this._mapNode.requestFullscreen) {
                 on(document, "fullscreenchange", lang.hitch(this, function () {
@@ -183,6 +197,15 @@ function (
 
         },
 
+        
+        _visible: function(){
+            if(this.get("visible")){
+                domStyle.set(this.domNode, 'display', 'block');
+            }
+            else{
+                domStyle.set(this.domNode, 'display', 'none');
+            }
+        },
 
 
         _toggleFullscreen: function () {
