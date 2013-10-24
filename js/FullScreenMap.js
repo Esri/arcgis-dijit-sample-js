@@ -19,6 +19,8 @@ define([
     "dojo/dom-attr",
 
     "esri/map",
+    
+    "modules/Test",
 
     "dojo/domReady!"
 ],
@@ -29,7 +31,8 @@ function (
     on,
     dijitTemplate,
     dom, domStyle, domClass, domAttr,
-    Map
+    Map,
+    Test
 ) {
     return declare([_WidgetBase, _TemplatedMixin, Evented], {
 
@@ -57,6 +60,10 @@ function (
             
             // watch for changes
             this.watch("visible", this._visible);
+            
+            // Test Module
+            var testModule = new Test();
+            testModule.test();
 
         },
 
