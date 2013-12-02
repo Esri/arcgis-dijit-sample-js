@@ -101,7 +101,6 @@ function (
         },
         refresh: function() {
             var w, h;
-            var center = this.map.extent.getCenter();
             // determine fullscreen state
             var state;
             if (this.get("container").requestFullscreen) {
@@ -140,7 +139,7 @@ function (
             }
             // re-center map
             this._timeout = setTimeout(lang.hitch(this, function() {
-                this.map.centerAt(center);
+                this.map.centerAt(this._mapCenter);
             }), 500);
         },
         /* ---------------- */
@@ -191,6 +190,7 @@ function (
             }
         },
         _toggleFullscreen: function() {
+            this._mapCenter = this.map.extent.getCenter();
             if (this.get("fullscreen")) {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
