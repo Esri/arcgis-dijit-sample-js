@@ -8,8 +8,8 @@ define([
     "dijit/_TemplatedMixin",
     "dojo/on",
     // load template
-    "dojo/text!./templates/FullScreenMap.html",
-    "dojo/i18n!./nls/FullScreenMap",
+    "dojo/text!application/templates/FullScreenMap.html",
+    "dojo/i18n!application/nls/FullScreenMap",
     "dojo/dom-style",
     "dojo/dom-class",
     "dojo/dom-attr",
