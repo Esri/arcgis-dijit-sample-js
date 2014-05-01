@@ -8,8 +8,8 @@ define([
     "dijit/_TemplatedMixin",
     "dojo/on",
     // load template
-    "dojo/text!modules/templates/FullScreenMap.html",
-    "dojo/i18n!modules/nls/FullScreenMap",
+    "dojo/text!./templates/FullScreenMap.html",
+    "dojo/i18n!./nls/FullScreenMap",
     "dojo/dom-style",
     "dojo/dom-class",
     "dojo/dom-attr",
@@ -24,8 +24,7 @@ function (
     i18n,
     domStyle, domClass, domAttr
 ) {
-    return declare([_WidgetBase, _TemplatedMixin, Evented], {
-        declaredClass: "modules.FullScreenMap",
+    return declare("modules.FullScreenMap", [_WidgetBase, _TemplatedMixin, Evented], {
         templateString: dijitTemplate,
         options: {
             map: null,
@@ -84,7 +83,6 @@ function (
         },
         // connections/subscriptions will be cleaned up during the destroy() lifecycle phase
         destroy: function() {
-            this._removeEvents();
             this.inherited(arguments);
         },
         show: function() {
@@ -145,38 +143,22 @@ function (
         /* ---------------- */
         /* Private Functions */
         /* ---------------- */
-        _removeEvents: function() {
-            // remove any event listeners created
-            if (this._events && this._events.length) {
-                for (var i = 0; i < this._events.length; i++) {
-                    this._events[i].remove();
-                }
-            }
-            this._events = [];
-        },
         _init: function() {
-            // remove any events
-            this._removeEvents();
             // fullscreeen change event
             var changeEvent;
             // enter/exit fullscreen event
             if (this.get("container").requestFullscreen) {
-                changeEvent = on(document, "fullscreenchange", lang.hitch(this, function() {
+                changeEvent = this.own(on(document, "fullscreenchange", lang.hitch(this, function() {
                     this.refresh();
-                }));
+                })));
             } else if (this.get("container").mozRequestFullScreen) {
-                changeEvent = on(document, "mozfullscreenchange", lang.hitch(this, function() {
+                changeEvent = this.own(on(document, "mozfullscreenchange", lang.hitch(this, function() {
                     this.refresh();
-                }));
+                })));
             } else if (this.get("container").webkitRequestFullScreen) {
-                changeEvent = on(document, "webkitfullscreenchange", lang.hitch(this, function() {
+                changeEvent = this.own(on(document, "webkitfullscreenchange", lang.hitch(this, function() {
                     this.refresh();
-                }));
-            }
-            // if event created
-            if(changeEvent){
-                // add it to events array
-                this._events.push(changeEvent);   
+                })));
             }
             this.set("loaded", true);
             // emit event
