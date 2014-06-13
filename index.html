@@ -58,7 +58,7 @@
             // The locationPath logic below may look confusing but all its doing is 
             // enabling us to load the api from a CDN and load local modules from the correct location.
             packages: [{
-                name: "modules",
+                name: "application",
                 location: package_path + '/js'
             }]
         };
@@ -71,7 +71,7 @@
 
     <script src="//js.arcgis.com/3.7/" type="text/javascript"></script>
     <script type="text/javascript">
-        require(["esri/map", "modules/FullScreenMap"], function(Map, FullScreenMap){
+        require(["esri/map", "application/FullScreenMap"], function(Map, FullScreenMap){
 
             var myMap = new Map("map", {
                 center: [-56.049, 38.485],
