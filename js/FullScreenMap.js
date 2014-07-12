@@ -129,10 +129,10 @@ define([
             var container = this.get("container");
             // if an element is fullscreen
             if (
-                document.fullscreenElement !== null ||
-                document.mozFullScreenElement !== null ||
-                document.webkitFullscreenElement !== null ||
-                document.msFullscreenElement !== null
+                document.fullscreenElement ||
+                document.mozFullScreenElement ||
+                document.webkitFullscreenElement ||
+                document.msFullscreenElement
             ) {
                 state = true;
             }
