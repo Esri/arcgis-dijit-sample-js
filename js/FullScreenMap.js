@@ -1,38 +1,61 @@
 // http://dojotoolkit.org/reference-guide/1.9/quickstart/writingWidgets.html
 define([
+    // For emitting events
     "dojo/Evented",
+
+    // needed to create a class
     "dojo/_base/declare",
     "dojo/_base/lang",
+
+    // widget class
     "dijit/_WidgetBase",
+
+    // accessibility click
     "dijit/a11yclick",
+
+    // templated widget
     "dijit/_TemplatedMixin",
+
+    // handle events
     "dojo/on",
+
     // load template
     "dojo/text!application/templates/FullScreenMap.html",
+
+    // localization
     "dojo/i18n!application/nls/FullScreenMap",
+
+    // dom manipulation
     "dojo/dom-style",
     "dojo/dom-class",
     "dojo/dom-attr",
+
+    // wait for dom to be ready
     "dojo/domReady!"
 ],
-function (
-    Evented,
-    declare, lang,
-    _WidgetBase, a11yclick, _TemplatedMixin,
-    on,
-    dijitTemplate,
-    i18n,
-    domStyle, domClass, domAttr
-) {
+    function (
+        // make sure these are arranged in the same order as above
+        Evented,
+        declare, lang,
+        _WidgetBase, a11yclick, _TemplatedMixin,
+        on,
+        dijitTemplate,
+        i18n,
+        domStyle, domClass, domAttr
+    ) {
     return declare("modules.FullScreenMap", [_WidgetBase, _TemplatedMixin, Evented], {
+        // my html template string
         templateString: dijitTemplate,
+
+        // default options
         options: {
             map: null,
             visible: true,
             container: null
         },
+
         // lifecycle: 1
-        constructor: function(options, srcRefNode) {
+        constructor: function (options, srcRefNode) {
             // css classes
             this.css = {
                 fs: "fs",
@@ -56,16 +79,17 @@ function (
         // _TemplatedMixin implements buildRendering() for you. Use this to override
         // buildRendering: function() {},
         // called after buildRendering() is finished
-        postCreate: function() {
-            this.own(on(this.buttonNode, a11yclick, lang.hitch(this, this._toggleFullscreen)));
+        postCreate: function () {
+            // own this accessible click event button
+            this.own(on(this.buttonNode, a11yclick, lang.hitch(this, this.toggle)));
         },
         // start widget. called by user
-        startup: function() {
+        startup: function () {
             // set visibility
             this._visible();
             // map not defined
             if (!this.get("map")) {
-                console.log('map required');
+                console.log("map required");
                 this.destroy();
                 return;
             }
@@ -76,103 +100,99 @@ function (
             if (this.map.loaded) {
                 this._init();
             } else {
-                on.once(this.map, "load", lang.hitch(this, function() {
+                on.once(this.map, "load", lang.hitch(this, function () {
                     this._init();
                 }));
             }
         },
         // connections/subscriptions will be cleaned up during the destroy() lifecycle phase
-        destroy: function() {
+        destroy: function () {
             this.inherited(arguments);
         },
-        show: function() {
+        show: function () {
             this.set("visible", true);
         },
-        hide: function() {
+        hide: function () {
             this.set("visible", false);
         },
         /* ---------------- */
         /* Public Functions */
         /* ---------------- */
-        toggle: function() {
+        toggle: function () {
             this._toggleFullscreen();
         },
-        refresh: function() {
+        refresh: function () {
             var w, h;
             // determine fullscreen state
-            var state;
-            if (this.get("container").requestFullscreen) {
-                state = document.fullScreen;
-            } else if (this.get("container").mozRequestFullScreen) {
-                state = document.mozFullScreen;
-            } else if (this.get("container").webkitRequestFullScreen) {
-                state = document.webkitIsFullScreen;
+            var state = false;
+            // container node
+            var container = this.get("container");
+            // if an element is fullscreen
+            if (
+                document.fullscreenElement != null ||
+                document.mozFullScreenElement != null ||
+                document.webkitFullscreenElement != null ||
+                document.msFullscreenElement != null
+            ) {
+                state = true;
             }
             // set fullscreen status
             this.set("fullscreen", state);
             // if fullscreen is set
-            if (this.get("fullscreen")) {
+            if (state) {
                 w = "100%";
                 h = "100%";
                 domClass.add(this.buttonNode, this.css.exit);
                 domClass.remove(this.buttonNode, this.css.enter);
                 domAttr.set(this.buttonNode, "title", this._i18n.exit);
             } else {
-                w = '';
-                h = '';
+                w = "";
+                h = "";
                 domClass.add(this.buttonNode, this.css.enter);
                 domClass.remove(this.buttonNode, this.css.exit);
                 domAttr.set(this.buttonNode, "title", this._i18n.enter);
             }
             // set map width and height
-            domStyle.set(this.get("container"), {
+            domStyle.set(container, {
                 width: w,
                 height: h
             });
             // resize map
             this.map.resize();
-            // clear timeout if it exists
-            if(this._timeout){
-                clearTimeout(this._timeout);
-            }
-            // re-center map
-            this._timeout = setTimeout(lang.hitch(this, function() {
-                this.map.centerAt(this._mapCenter);
-            }), 500);
         },
         /* ---------------- */
         /* Private Functions */
         /* ---------------- */
-        _init: function() {
+        _init: function () {
             // fullscreeen change event
-            var changeEvent;
+            var evtName;
+            // node to put into fullscreen
+            var node = this.get("container");
             // enter/exit fullscreen event
-            if (this.get("container").requestFullscreen) {
-                changeEvent = this.own(on(document, "fullscreenchange", lang.hitch(this, function() {
-                    this.refresh();
-                })));
-            } else if (this.get("container").mozRequestFullScreen) {
-                changeEvent = this.own(on(document, "mozfullscreenchange", lang.hitch(this, function() {
-                    this.refresh();
-                })));
-            } else if (this.get("container").webkitRequestFullScreen) {
-                changeEvent = this.own(on(document, "webkitfullscreenchange", lang.hitch(this, function() {
-                    this.refresh();
-                })));
+            if (node.requestFullscreen) {
+                evtName = "fullscreenchange";
+            } else if (node.mozRequestFullScreen) {
+                evtName = "mozfullscreenchange";
+            } else if (node.webkitRequestFullScreen) {
+                evtName = "webkitfullscreenchange";
+            } else if (node.msRequestFullscreen) {
+                evtName = "msfullscreenchange";
+            }
+            if (evtName) {
+                this.own(on(document, evtName, lang.hitch(this, this.refresh)));
             }
             this.set("loaded", true);
             // emit event
             this.emit("load", {});
         },
-        _visible: function() {
+        _visible: function () {
             if (this.get("visible")) {
-                domStyle.set(this.domNode, 'display', 'block');
+                domStyle.set(this.domNode, "display", "block");
             } else {
-                domStyle.set(this.domNode, 'display', 'none');
+                domStyle.set(this.domNode, "display", "none");
             }
         },
-        _toggleFullscreen: function() {
-            this._mapCenter = this.map.extent.getCenter();
+        _toggleFullscreen: function () {
             if (this.get("fullscreen")) {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
@@ -180,14 +200,19 @@ function (
                     document.mozCancelFullScreen();
                 } else if (document.webkitCancelFullScreen) {
                     document.webkitCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
                 }
             } else {
-                if (this.get("container").requestFullscreen) {
-                    this.get("container").requestFullscreen();
-                } else if (this.get("container").mozRequestFullScreen) {
-                    this.get("container").mozRequestFullScreen();
-                } else if (this.get("container").webkitRequestFullScreen) {
-                    this.get("container").webkitRequestFullScreen();
+                var node = this.get("container");
+                if (node.requestFullscreen) {
+                    node.requestFullscreen();
+                } else if (node.mozRequestFullScreen) {
+                    node.mozRequestFullScreen();
+                } else if (node.webkitRequestFullScreen) {
+                    node.webkitRequestFullScreen();
+                } else if (node.msRequestFullScreen) {
+                    node.msRequestFullScreens();
                 }
             }
         }
