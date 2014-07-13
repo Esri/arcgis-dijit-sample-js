@@ -139,7 +139,7 @@ function (
             } else if (node.webkitRequestFullScreen) {
                 evtName = "webkitfullscreenchange";
             } else if (node.msRequestFullscreen) {
-                evtName = "msfullscreenchange";
+                evtName = "MSFullscreenChange";
             } else {
                 console.log("Fullscreen disabled or not supported.");
                 this.destroy();
