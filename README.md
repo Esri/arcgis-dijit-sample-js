@@ -6,7 +6,7 @@ An example Dijit boilerplate for the ArcGIS API for JavaScript
 [View Demo](http://esri.github.com/arcgis-dijit-sample-js/)
 
 ## Instructions
-See the powerpoint in the root directory for more information. This demo theater was presented at the 2013 Developer Summit in Palm Springs CA.
+See the powerpoint in the root directory for more information. This demo theater was presented at the 2014 Esri User Conference in San Diego CA.
 
  [New to Github? Get started here.](https://github.com/)
 
