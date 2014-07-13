@@ -33,28 +33,29 @@ define([
     // wait for dom to be ready
     "dojo/domReady!"
 ],
-    function (
-        // make sure these are arranged in the same order as above
-        Evented,
-        declare, lang,
-        _WidgetBase, a11yclick, _TemplatedMixin,
-        on,
-        dijitTemplate,
-        i18n,
-        domStyle, domClass, domAttr
-    ) {
-    return declare("modules.FullScreenMap", [_WidgetBase, _TemplatedMixin, Evented], {
+function (
+    // make sure these are arranged in the same order as above
+    Evented,
+    declare, lang,
+    _WidgetBase, a11yclick, _TemplatedMixin,
+    on,
+    dijitTemplate,
+    i18n,
+    domStyle, domClass, domAttr
+) {
+    return declare("application.FullScreenMap", [_WidgetBase, _TemplatedMixin, Evented], {
         // my html template string
         templateString: dijitTemplate,
 
         // default options
         options: {
             map: null,
-            visible: true,
-            container: null
+            visible: true
         },
 
-        // lifecycle: 1
+        /* ---------------- */
+        /* Lifecycle methods */
+        /* ---------------- */
         constructor: function (options, srcRefNode) {
             // css classes
             this.css = {
@@ -67,12 +68,13 @@ define([
             this._i18n = i18n;
             // mix in settings and defaults
             var defaults = lang.mixin({}, this.options, options);
-            // widget node
+            // create the DOM for this widget
             this.domNode = srcRefNode;
-            // set map property
+            // set properties
             this.set("map", defaults.map);
             this.set("visible", defaults.visible);
             this.set("container", defaults.container);
+            this.set("fullscreen", false);
             // watch for changes
             this.watch("visible", this._visible);
         },
@@ -81,7 +83,8 @@ define([
         // called after buildRendering() is finished
         postCreate: function () {
             // own this accessible click event button
-            this.own(on(this.buttonNode, a11yclick, lang.hitch(this, this.toggle)));
+            // Custom press, release, and click synthetic events which trigger on a left mouse click, touch, or space/enter keyup.
+            this.own(on(this.buttonNode, a11yclick, lang.hitch(this, this._toggle)));
         },
         // start widget. called by user
         startup: function () {
@@ -107,8 +110,12 @@ define([
         },
         // connections/subscriptions will be cleaned up during the destroy() lifecycle phase
         destroy: function () {
+            // call the superclass method of the same name.
             this.inherited(arguments);
         },
+        /* ---------------- */
+        /* Public Functions */
+        /* ---------------- */
         show: function () {
             this.set("visible", true);
         },
@@ -116,18 +123,49 @@ define([
             this.set("visible", false);
         },
         /* ---------------- */
-        /* Public Functions */
+        /* Private Functions */
         /* ---------------- */
-        toggle: function () {
-            this._toggleFullscreen();
+        _init: function () {
+            // fullscreeen change event
+            var evtName;
+            // node to put into fullscreen
+            var node = this.get("container");
+            // enter/exit fullscreen event
+            // Vendor specific prefixes/events
+            if (node.requestFullscreen) {
+                evtName = "fullscreenchange";
+            } else if (node.mozRequestFullScreen) {
+                evtName = "mozfullscreenchange";
+            } else if (node.webkitRequestFullScreen) {
+                evtName = "webkitfullscreenchange";
+            } else if (node.msRequestFullscreen) {
+                evtName = "msfullscreenchange";
+            } else {
+                console.log("Fullscreen disabled or not supported.");
+                this.destroy();
+                return;
+            }
+            if (evtName) {
+                this.own(on(document, evtName, lang.hitch(this, this._changed)));
+            }
+            this.set("loaded", true);
+            // emit event
+            this.emit("load", {});
         },
-        refresh: function () {
+        _visible: function () {
+            if (this.get("visible")) {
+                domStyle.set(this.domNode, "display", "block");
+            } else {
+                domStyle.set(this.domNode, "display", "none");
+            }
+        },
+        _changed: function () {
             var w, h;
             // determine fullscreen state
             var state = false;
             // container node
             var container = this.get("container");
-            // if an element is fullscreen
+            // if an element is currently fullscreen
             if (
                 document.fullscreenElement ||
                 document.mozFullScreenElement ||
@@ -138,7 +176,11 @@ define([
             }
             // set fullscreen status
             this.set("fullscreen", state);
-            // if fullscreen is set
+            // emit event
+            this.emit("fullscreen-change", {
+                fullscreen: state
+            });
+            // if fullscreen
             if (state) {
                 w = "100%";
                 h = "100%";
@@ -160,39 +202,7 @@ define([
             // resize map
             this.map.resize();
         },
-        /* ---------------- */
-        /* Private Functions */
-        /* ---------------- */
-        _init: function () {
-            // fullscreeen change event
-            var evtName;
-            // node to put into fullscreen
-            var node = this.get("container");
-            // enter/exit fullscreen event
-            if (node.requestFullscreen) {
-                evtName = "fullscreenchange";
-            } else if (node.mozRequestFullScreen) {
-                evtName = "mozfullscreenchange";
-            } else if (node.webkitRequestFullScreen) {
-                evtName = "webkitfullscreenchange";
-            } else if (node.msRequestFullscreen) {
-                evtName = "msfullscreenchange";
-            }
-            if (evtName) {
-                this.own(on(document, evtName, lang.hitch(this, this.refresh)));
-            }
-            this.set("loaded", true);
-            // emit event
-            this.emit("load", {});
-        },
-        _visible: function () {
-            if (this.get("visible")) {
-                domStyle.set(this.domNode, "display", "block");
-            } else {
-                domStyle.set(this.domNode, "display", "none");
-            }
-        },
-        _toggleFullscreen: function () {
+        _toggle: function () {
             if (this.get("fullscreen")) {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();

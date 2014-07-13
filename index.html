@@ -34,11 +34,17 @@
         .fs .toggle{
             width: 30px;
             height: 30px;
-            border: 2px solid #666666;
+            border: 1px solid #57585A;
             -webkit-user-select: none;
             -webkit-border-radius: 5px;
             border-radius: 5px;
             cursor:pointer;
+        }
+        .fs .toggle:hover{
+            background-color: #eee;
+        }
+        .fs .toggle:active{
+            background-color: #ddd;
         }
         .fs .enter{
             background: #fff url(images/fullscreen.png) no-repeat center center;
@@ -71,7 +77,10 @@
 
     <script src="//js.arcgis.com/3.10/" type="text/javascript"></script>
     <script type="text/javascript">
-        require(["esri/map", "application/FullScreenMap"], function(Map, FullScreenMap){
+        
+        var fullscreen;
+        
+        require(["esri/map", "application/FullScreenMap", "dojo/on"], function(Map, FullScreenMap, on){
 
             var myMap = new Map("map", {
                 center: [-56.049, 38.485],
@@ -80,14 +89,18 @@
             });
 
 
-            var fullscreen = new FullScreenMap({
+            fullscreen = new FullScreenMap({
                 map: myMap
             }, "fullscreen");
+            
             fullscreen.startup();
 
-
-            fullscreen.watch("fullscreen", function(){
-                console.log("fullscreen: " + fullscreen.get("fullscreen"));
+            fullscreen.watch("fullscreen", function(name, oldValue, value){
+                console.log(name + ": from " + oldValue + " to " + value);
+            });
+            
+            on(fullscreen, 'fullscreen-change', function(evt){
+                console.log(evt);
             });
 
 
