@@ -219,10 +219,10 @@ function (
                     node.requestFullscreen();
                 } else if (node.mozRequestFullScreen) {
                     node.mozRequestFullScreen();
-                } else if (node.webkitRequestFullScreen) {
-                    node.webkitRequestFullScreen();
-                } else if (node.msRequestFullScreen) {
-                    node.msRequestFullScreens();
+                } else if (node.webkitRequestFullscreen) {
+                    node.webkitRequestFullscreen();
+                } else if (node.msRequestFullscreen) {
+                    node.msRequestFullscreen();
                 }
             }
         }
