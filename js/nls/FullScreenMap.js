@@ -1,6 +1,6 @@
 define({
-    root: ({
-        enter: "Enter Fullscreen",
-        exit: "Exit Fullscreen"
-    })
+  root: ({
+    enter: "Enter Fullscreen",
+    exit: "Exit Fullscreen"
+  })
 });

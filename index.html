@@ -1,128 +1,130 @@
 <!DOCTYPE HTML>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-    <title>Fullscreen Dijit</title>
-    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.10/js/esri/css/esri.css">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <title>Fullscreen Dijit</title>
+  <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.12/esri/css/esri.css">
 
 
 
 
-    <style>
-        body{
-            margin:40px;
-            padding:20px;
-        }
-        .container{
-            position:relative;
-            padding: 10px;
-            border: 1px solid #eee;
-            -webkit-border-radius: 3px;
-            border-radius: 3px;
-        }
-        #map{
-            width:100%;
-            height: 500px;
-        }
-        #fullscreen{
-            position:absolute;
-            z-index: 4;
-            top:20px;
-            right:20px;
-        }
-        .fs .toggle{
-            width: 30px;
-            height: 30px;
-            border: 1px solid #57585A;
-            -webkit-user-select: none;
-            -webkit-border-radius: 5px;
-            border-radius: 5px;
-            cursor:pointer;
-        }
-        .fs .toggle:hover{
-            background-color: #eee;
-        }
-        .fs .toggle:active{
-            background-color: #ddd;
-        }
-        .fs .enter{
-            background: #fff url(images/fullscreen_enter.png) no-repeat center center;
-        }
-        .fs .exit{
-            background: #fff url(images/fullscreen_exit.png) no-repeat center center;
-        }
-    </style>
+  <style>
+    body {
+      margin: 40px;
+      padding: 20px;
+    }
+    .container {
+      position: relative;
+      padding: 10px;
+      border: 1px solid #eee;
+      -webkit-border-radius: 3px;
+      border-radius: 3px;
+    }
+    #map {
+      width: 100%;
+      height: 500px;
+    }
+    #fullscreen {
+      position: absolute;
+      z-index: 4;
+      top: 20px;
+      right: 20px;
+    }
+    .fs .toggle {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #57585A;
+      -webkit-user-select: none;
+      -webkit-border-radius: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .fs .toggle:hover {
+      background-color: #eee;
+    }
+    .fs .toggle:active {
+      background-color: #ddd;
+    }
+    .fs .enter {
+      background: #fff url(images/fullscreen_enter.png) no-repeat center center;
+    }
+    .fs .exit {
+      background: #fff url(images/fullscreen_exit.png) no-repeat center center;
+    }
+  </style>
 
 
 
 
 
-    <script type="text/javascript">
-        var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-        var dojoConfig = {
-            // The locationPath logic below may look confusing but all its doing is 
-            // enabling us to load the api from a CDN and load local modules from the correct location.
-            packages: [{
-                name: "application",
-                location: package_path + '/js'
+  <script type="text/javascript">
+    var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+    var dojoConfig = {
+      // The locationPath logic below may look confusing but all its doing is 
+      // enabling us to load the api from a CDN and load local modules from the correct location.
+      packages: [{
+        name: "application",
+        location: package_path + '/js'
             }]
-        };
-    </script>
+    };
+  </script>
 
 
 
 
 
 
-    <script src="//js.arcgis.com/3.10/" type="text/javascript"></script>
-    <script type="text/javascript">
-        
-        var fullscreen;
-        
-        require(["esri/map", "application/FullScreenMap", "dojo/on"], function(Map, FullScreenMap, on){
+  <script src="//js.arcgis.com/3.12/" type="text/javascript"></script>
+  <script type="text/javascript">
+    var fullscreen;
 
-            var myMap = new Map("map", {
-                center: [-56.049, 38.485],
-                zoom: 3,
-                basemap: "streets"
-            });
+    require(["esri/map", "application/FullScreenMap", "dojo/on"], function (Map, FullScreenMap, on) {
 
-
-            fullscreen = new FullScreenMap({
-                map: myMap
-            }, "fullscreen");
-            
-            fullscreen.startup();
-
-            fullscreen.watch("fullscreen", function(name, oldValue, value){
-                console.log(name + ": from " + oldValue + " to " + value);
-            });
-            
-            on(fullscreen, 'fullscreen-change', function(evt){
-                console.log(evt);
-            });
+      var myMap = new Map("map", {
+        center: [-56.049, 38.485],
+        zoom: 3,
+        basemap: "streets"
+      });
 
 
-        });
-    </script>
+      fullscreen = new FullScreenMap({
+        map: myMap
+      }, "fullscreen");
+
+      fullscreen.startup();
+
+      fullscreen.watch("fullscreen", function (name, oldValue, value) {
+        console.log(name + ": from " + oldValue + " to " + value);
+      });
+
+      on(fullscreen, 'fullscreen-change', function (evt) {
+        console.log(evt);
+      });
+
+
+    });
+  </script>
 
 
 
 
 
 </head>
+
 <body>
 
 
 
-    <div class="container">
-        <div id="map" class="map">
-            <div id="fullscreen"></div>
-        </div>
+  <div class="container">
+    <div id="map" class="map">
+      <div id="fullscreen"></div>
     </div>
+  </div>
 
 
 
 </body>
+
 </html>
